@@ -1,0 +1,9 @@
+Package: EeveeSpotify
+Version: 5.8.8
+Architecture: iphoneos-arm64
+Maintainer: Your Name <your-email@example.com>
+Description: EeveeSpotify tweak
+Depends: mobilesubstrate
+Filename: com.eevee.spotify_5.8.8_iphoneos-arm64.deb
+Size: 12345
+MD5sum: 00c390b2d2a573a6fc99d5b473f3d790
