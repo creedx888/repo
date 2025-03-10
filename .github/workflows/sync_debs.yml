@@ -17,11 +17,10 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      # Step 2: Remove old arm64 DEB files that match eevee.spotify and swift.protobuf
+      # Step 2: Remove old matching arm64 DEBs (eevee.spotify or swift.protobuf)
       - name: Remove old arm64 DEB files
         run: |
           echo "Removing old arm64 DEBs with 'eevee.spotify' or 'swift.protobuf' in the name..."
-          # Loop through all deb files in the debs/ folder and delete those that match the pattern
           for deb_file in debs/*.deb; do
             if [[ "$deb_file" == *"eevee.spotify"* ]] || [[ "$deb_file" == *"swift.protobuf"* ]]; then
               echo "Removing $deb_file"
@@ -33,36 +32,50 @@ jobs:
       - name: Download arm64 DEBs from EeveeSpotify
         run: |
           echo "Downloading arm64 DEBs from EeveeSpotify..."
-          # Fetch the latest release assets from the EeveeSpotify repo
           API_URL="https://api.github.com/repos/whoeevee/EeveeSpotify/releases/latest"
-          
-          # Fetch the list of arm64 .deb files from the release
           curl -s $API_URL | jq -r '.assets[] | select(.name | test("iphoneos-arm64.*deb$")) | .browser_download_url' | while read deb_url; do
             wget -P debs/ $deb_url  # Download each arm64 .deb file into the debs/ folder
           done
 
-      # Step 4: Create or update the Packages file in the root directory
+      # Step 4: Create or update Packages file in the root
       - name: Create or update Packages file for arm64 in root
         run: |
           echo "Creating or updating Packages file..."
-          # Ensure only arm64 files are included in the Packages file (output it to the root folder)
           dpkg-scanpackages debs /dev/null > Packages
+          
+          # Check if Packages file is created
+          if [ ! -f Packages ]; then
+            echo "Packages file not created!"
+            exit 1
+          fi
 
-      # Step 5: Compress the Packages file to create Packages.gz in the root directory
+      # Step 5: Create Packages.gz (compress Packages)
       - name: Create Packages.gz
         run: |
           echo "Creating Packages.gz..."
-          # Remove the existing Packages.gz file, if it exists, then create a new one
-          rm -f Packages.gz
+          rm -f Packages.gz  # Remove old Packages.gz if it exists
           gzip -9 Packages
 
-      # Step 6: Commit and push changes to the repository
+          # Check if Packages.gz was created
+          if [ ! -f Packages.gz ]; then
+            echo "Packages.gz file not created!"
+            exit 1
+          fi
+
+      # Step 6: Commit and push changes
       - name: Commit and push changes
         run: |
           echo "Committing and pushing changes..."
           git config --global user.name "GitHub Actions"
           git config --global user.email "actions@github.com"
           git remote set-url origin https://github-actions:${{ secrets.GH_TOKEN }}@github.com/creedx888/repo.git
-          git add debs/ Packages Packages.gz
-          git commit -m "Auto-update arm64 DEBs from EeveeSpotify"
-          git push origin main
+          
+          # Make sure the Packages and Packages.gz files exist before committing
+          if [ -f Packages ] && [ -f Packages.gz ]; then
+            git add debs/ Packages Packages.gz
+            git commit -m "Auto-update arm64 DEBs from EeveeSpotify"
+            git push origin main
+          else
+            echo "Packages or Packages.gz file missing. Skipping commit."
+            exit 1
+          fi
