@@ -1,8 +1,8 @@
 Origin: A - CREEDS REPO
-Label: A - CREEDS REPO
 Suite: stable
 Version: 1.0
 Codename: ios
 Architecture: iphoneos-arm64
 Components: main
 Description: My Custom Repo
+icon: https://raw.githubusercontent.com/yourusername/your-repo-name/master/repo-icon.png
