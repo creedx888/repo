@@ -6,6 +6,7 @@ on:
   release:
     types:
       - published
+  workflow_dispatch:  # Allows manual trigger from GitHub UI
 
 jobs:
   sync-debs:
