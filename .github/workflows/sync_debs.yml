@@ -17,19 +17,25 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      # Step 2: Remove old .deb files from the debs/ folder
-      - name: Remove old DEB files
+      # Step 2: Remove specific old DEB files from the debs/ folder
+      - name: Remove specific old DEB files
         run: |
-          rm -f debs/*.deb
+          # Loop through all deb files in the debs/ folder and delete those that match the pattern
+          for deb_file in debs/*.deb; do
+            # Remove files that match "eevee.spotify" or "swift.protobuf"
+            if [[ "$deb_file" == *"eevee.spotify"* ]] || [[ "$deb_file" == *"swift.protobuf"* ]]; then
+              echo "Removing $deb_file"
+              rm -f "$deb_file"  # Delete the matching file
+            fi
+          done
 
       # Step 3: Fetch release assets and download all .deb files
       - name: Download DEBs from EeveeSpotify
         run: |
-          # Replace the 'v5.8.8' with the latest release version you want to fetch, or use the latest release dynamically
-          RELEASE_VERSION="v5.8.8"
-          API_URL="https://api.github.com/repos/whoeevee/EeveeSpotify/releases/tags/$RELEASE_VERSION"
+          # Fetch the latest release tag dynamically
+          API_URL="https://api.github.com/repos/whoeevee/EeveeSpotify/releases/latest"
           
-          # Fetch the list of assets (files) from the release
+          # Fetch the list of assets (files) from the latest release
           curl -s $API_URL | jq -r '.assets[] | select(.name | endswith(".deb")) | .browser_download_url' | while read deb_url; do
             # Download each .deb file into the debs/ folder
             wget -P debs/ $deb_url
