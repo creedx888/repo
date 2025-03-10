@@ -1,0 +1,32 @@
+Package: com.eevee.spotify
+Version: 5.8.8
+Architecture: iphoneos-arm64
+Maintainer: Eevee
+Installed-Size: 1596
+Depends: dev.theos.orion (>= 1.0.0), firmware (>= 14.0), org.swift.protobuf.swiftprotobuf (>= 1.28.1)
+Filename: debs/com.eevee.spotify_5.8.8_iphoneos-arm64.deb
+Size: 397336
+MD5sum: 00c390b2d2a573a6fc99d5b473f3d790
+SHA1: a525621bf88748d4b0c3c571ef19bae766e44c10
+SHA256: 4ff30f24e9a6ccb8e4f797dbcda5ea94dbf7842acde327e21ed29fd7d8b3a552
+Section: Tweaks
+Description: A tweak to get Spotify Premium for free, just like Spotilife
+Author: Eevee
+Name: EeveeSpotify
+
+Package: org.swift.protobuf.swiftprotobuf
+Version: 1.29.0
+Architecture: iphoneos-arm64
+Maintainer: eevee
+Installed-Size: 10116
+Filename: debs/org.swift.protobuf.swiftprotobuf_1.29.0_iphoneos-arm64.deb
+Size: 1446130
+MD5sum: 78e5915754b1068b212890ffe907dfd0
+SHA1: 6d0a4904f961407b2fbc7153bd9fae3dda27b8db
+SHA256: 82370ccb97937f4d7b4408f0c918d9136bad5a2c40f11d1aeb3337dda9f06b6f
+Section: System
+Description: Plugin and runtime library for using protobuf with Swift
+Tag: role::developer
+Author: eevee
+Name: SwiftProtobuf
+
