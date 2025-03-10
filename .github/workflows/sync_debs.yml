@@ -1,0 +1,35 @@
+name: Sync DEBs from EeveeSpotify
+
+on:
+  schedule:
+    - cron: "0 * * * *"  # Runs every hour
+  workflow_dispatch:  # Allows manual trigger
+
+jobs:
+  sync-debs:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout your repo
+        uses: actions/checkout@v3
+
+      - name: Download latest release DEB
+        run: |
+          mkdir -p debs
+          LATEST_RELEASE=$(curl -s https://api.github.com/repos/whoeevee/EeveeSpotify/releases/latest | jq -r '.assets[] | select(.name | endswith(".deb")) | .browser_download_url')
+          for URL in $LATEST_RELEASE; do
+            wget -P debs/ "$URL"
+          done
+
+      - name: Generate Packages file
+        run: |
+          dpkg-scanpackages debs /dev/null > Packages
+          gzip -c Packages > Packages.gz
+
+      - name: Commit and push changes
+        run: |
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "actions@github.com"
+          git add debs/ Packages Packages.gz
+          git commit -m "Auto-update DEBs from EeveeSpotify"
+          git push
