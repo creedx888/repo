@@ -41,15 +41,15 @@ jobs:
             wget -P debs/ $deb_url
           done
 
-      # Step 4: Create or update Packages file and overwrite it
-      - name: Create or update Packages file for arm64
+      # Step 4: Create or update Packages file and overwrite it in the root folder
+      - name: Create or update Packages file for arm64 in root
         run: |
           # Ensure only arm64 files are included in the Packages file
-          dpkg-scanpackages debs /dev/null > debs/Packages
+          dpkg-scanpackages debs /dev/null > Packages
 
-          # Overwrite the Packages.gz file (remove previous one and recreate)
-          rm -f debs/Packages.gz
-          gzip -9 debs/Packages
+          # Overwrite the Packages.gz file (remove previous one and recreate) in the root folder
+          rm -f Packages.gz
+          gzip -9 Packages
 
       # Step 5: Commit and push changes to the repository
       - name: Commit and push changes
@@ -57,6 +57,6 @@ jobs:
           git config --global user.name "GitHub Actions"
           git config --global user.email "actions@github.com"
           git remote set-url origin https://github-actions:${{ secrets.GH_TOKEN }}@github.com/creedx888/repo.git
-          git add Packages Packages.gz
+          git add debs/ Packages Packages.gz
           git commit -m "Auto-update arm64 DEBs from EeveeSpotify"
           git push origin main
