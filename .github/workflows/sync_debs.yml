@@ -1,4 +1,4 @@
-name: Sync DEBs from EeveeSpotify
+name: Sync arm64 DEBs from EeveeSpotify
 
 on:
   schedule:
@@ -18,31 +18,31 @@ jobs:
         uses: actions/checkout@v2
 
       # Step 2: Remove specific old DEB files from the debs/ folder
-      - name: Remove specific old DEB files
+      - name: Remove specific old arm64 DEB files
         run: |
           # Loop through all deb files in the debs/ folder and delete those that match the pattern
           for deb_file in debs/*.deb; do
-            # Remove files that match "eevee.spotify" or "swift.protobuf"
+            # Remove files that match "eevee.spotify" or "swift.protobuf" for arm64
             if [[ "$deb_file" == *"eevee.spotify"* ]] || [[ "$deb_file" == *"swift.protobuf"* ]]; then
               echo "Removing $deb_file"
               rm -f "$deb_file"  # Delete the matching file
             fi
           done
 
-      # Step 3: Fetch release assets and download all .deb files
-      - name: Download DEBs from EeveeSpotify
+      # Step 3: Fetch release assets and download only arm64 .deb files
+      - name: Download arm64 DEBs from EeveeSpotify
         run: |
           # Fetch the latest release tag dynamically
           API_URL="https://api.github.com/repos/whoeevee/EeveeSpotify/releases/latest"
           
           # Fetch the list of assets (files) from the latest release
-          curl -s $API_URL | jq -r '.assets[] | select(.name | endswith(".deb")) | .browser_download_url' | while read deb_url; do
-            # Download each .deb file into the debs/ folder
+          curl -s $API_URL | jq -r '.assets[] | select(.name | test("iphoneos-arm64.*deb$")) | .browser_download_url' | while read deb_url; do
+            # Download each arm64 .deb file into the debs/ folder
             wget -P debs/ $deb_url
           done
 
-      # Step 4: Update Packages file with the new .deb files
-      - name: Create or update Packages file
+      # Step 4: Update Packages file with the new arm64 .deb files
+      - name: Create or update Packages file for arm64
         run: |
           dpkg-scanpackages debs /dev/null > debs/Packages
           gzip -9 debs/Packages
@@ -54,5 +54,5 @@ jobs:
           git config --global user.email "actions@github.com"
           git remote set-url origin https://github-actions:${{ secrets.GH_TOKEN }}@github.com/creedx888/repo.git
           git add debs/ Packages Packages.gz
-          git commit -m "Auto-update DEBs from EeveeSpotify"
+          git commit -m "Auto-update arm64 DEBs from EeveeSpotify"
           git push origin main
