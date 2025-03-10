@@ -7,25 +7,38 @@ on:
 
 jobs:
   sync-debs:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest  # This runs the job on a GitHub-hosted Ubuntu machine.
 
     steps:
+      # Step 1: Checkout the repository (so we can modify it)
       - name: Checkout your repo
         uses: actions/checkout@v3
 
+      # Step 2: Install dpkg-dev (needed for dpkg-scanpackages)
+      - name: Install dpkg-dev
+        run: |
+          sudo apt update && sudo apt install dpkg-dev -y  # Install dpkg-dev for dpkg-scanpackages command
+
+      # Step 3: Download latest release .deb files from EeveeSpotify
       - name: Download latest release DEB
         run: |
           mkdir -p debs
+          # Fetch the latest release URL containing .deb files
           LATEST_RELEASE=$(curl -s https://api.github.com/repos/whoeevee/EeveeSpotify/releases/latest | jq -r '.assets[] | select(.name | endswith(".deb")) | .browser_download_url')
+          # Download all the .deb files from the latest release
           for URL in $LATEST_RELEASE; do
             wget -P debs/ "$URL"
           done
 
+      # Step 4: Generate Packages file for Sileo
       - name: Generate Packages file
         run: |
+          # Generate the Packages file using dpkg-scanpackages
           dpkg-scanpackages debs /dev/null > Packages
+          # Compress the Packages file to Packages.gz for better performance
           gzip -c Packages > Packages.gz
 
+      # Step 5: Commit and push changes to GitHub
       - name: Commit and push changes
         run: |
           git config --global user.name "GitHub Actions"
