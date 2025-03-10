@@ -2,8 +2,10 @@ name: Sync DEBs from EeveeSpotify
 
 on:
   schedule:
-    - cron: "0 * * * *"  # Runs every hour
-  workflow_dispatch:  # Allows manual trigger
+    - cron: '0 */12 * * *'  # Runs every 12 hours (UTC)
+  release:
+    types:
+      - published
 
 jobs:
   sync-debs:
@@ -19,22 +21,22 @@ jobs:
         run: |
           rm -f debs/*.deb
 
-      # Step 3: Download new .deb files from the release
-       - name: Download new DEBs
-         run: |
-           mkdir -p debs
-           # Fetch the latest release URL containing .deb files
-           LATEST_RELEASE=$(curl -s https://api.github.com/repos/whoeevee/EeveeSpotify/releases/latest | jq -r '.assets[] | select(.name | endswith(".deb")) | .browser_download_url')
-           # Download all the .deb files from the latest release
-           for URL in $LATEST_RELEASE; do
-             wget -P debs/ "$URL"
-           done
-
-           
-      # Step 4: Generate the packages file
-      - name: Create packages file
+      # Step 3: Fetch release assets and download all .deb files
+      - name: Download DEBs from EeveeSpotify
         run: |
-          # Create the Packages file here as you were doing before
+          # Replace the 'v5.8.8' with the latest release version you want to fetch, or use the latest release dynamically
+          RELEASE_VERSION="v5.8.8"
+          API_URL="https://api.github.com/repos/whoeevee/EeveeSpotify/releases/tags/$RELEASE_VERSION"
+          
+          # Fetch the list of assets (files) from the release
+          curl -s $API_URL | jq -r '.assets[] | select(.name | endswith(".deb")) | .browser_download_url' | while read deb_url; do
+            # Download each .deb file into the debs/ folder
+            wget -P debs/ $deb_url
+          done
+
+      # Step 4: Create Packages file
+      - name: Create Packages file
+        run: |
           dpkg-scanpackages debs /dev/null | gzip > debs/Packages.gz
 
       # Step 5: Commit and push the changes to your repository
