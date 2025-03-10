@@ -17,8 +17,8 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      # Step 2: Remove specific old DEB files from the debs/ folder
-      - name: Remove specific old arm64 DEB files
+      # Step 2: Remove old arm64 DEB files
+      - name: Remove old arm64 DEB files
         run: |
           # Loop through all deb files in the debs/ folder and delete those that match the pattern
           for deb_file in debs/*.deb; do
@@ -41,13 +41,17 @@ jobs:
             wget -P debs/ $deb_url
           done
 
-      # Step 4: Update Packages file with the new arm64 .deb files
+      # Step 4: Create or update Packages file and overwrite it
       - name: Create or update Packages file for arm64
         run: |
+          # Ensure only arm64 files are included in the Packages file
           dpkg-scanpackages debs /dev/null > debs/Packages
+
+          # Overwrite the Packages.gz file (remove previous one and recreate)
+          rm -f debs/Packages.gz
           gzip -9 debs/Packages
 
-      # Step 5: Commit and push the changes to your repository
+      # Step 5: Commit and push changes to the repository
       - name: Commit and push changes
         run: |
           git config --global user.name "GitHub Actions"
