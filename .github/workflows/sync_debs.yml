@@ -41,10 +41,11 @@ jobs:
             wget -P debs/ $deb_url
           done
 
-      # Step 4: Create Packages file
-      - name: Create Packages file
+      # Step 4: Update Packages file with the new .deb files
+      - name: Create or update Packages file
         run: |
-          dpkg-scanpackages debs /dev/null | gzip > debs/Packages.gz
+          dpkg-scanpackages debs /dev/null > debs/Packages
+          gzip -9 debs/Packages
 
       # Step 5: Commit and push the changes to your repository
       - name: Commit and push changes
