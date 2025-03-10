@@ -20,13 +20,17 @@ jobs:
           rm -f debs/*.deb
 
       # Step 3: Download new .deb files from the release
-      - name: Download new DEBs
-        run: |
-          mkdir -p debs
-          # Replace the following line with the code to download the deb files from EeveeSpotify release
-          curl -L -o debs/com.eevee.spotify_5.8.8_iphoneos-arm.deb https://github.com/whoeevee/EeveeSpotify/releases/download/v5.8.8/com.eevee.spotify_5.8.8_iphoneos-arm.deb
-          curl -L -o debs/com.eevee.spotify_5.8.8_iphoneos-arm64.deb https://github.com/whoeevee/EeveeSpotify/releases/download/v5.8.8/com.eevee.spotify_5.8.8_iphoneos-arm64.deb
+       - name: Download new DEBs
+         run: |
+           mkdir -p debs
+           # Fetch the latest release URL containing .deb files
+           LATEST_RELEASE=$(curl -s https://api.github.com/repos/whoeevee/EeveeSpotify/releases/latest | jq -r '.assets[] | select(.name | endswith(".deb")) | .browser_download_url')
+           # Download all the .deb files from the latest release
+           for URL in $LATEST_RELEASE; do
+             wget -P debs/ "$URL"
+           done
 
+           
       # Step 4: Generate the packages file
       - name: Create packages file
         run: |
