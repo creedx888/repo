@@ -1,14 +1,14 @@
 Package: com.eevee.spotify
-Version: 5.9.9
+Version: 6.0
 Architecture: iphoneos-arm64
 Maintainer: Eevee
-Installed-Size: 1548
+Installed-Size: 1612
 Depends: dev.theos.orion (>= 1.0.0), firmware (>= 14.0), org.swift.protobuf.swiftprotobuf (>= 1.29.0)
-Filename: debs/com.eevee.spotify_5.9.9_iphoneos-arm64.deb
-Size: 391784
-MD5sum: fb6b71618a653d880bb12859fd0d10ee
-SHA1: 3e3891c0a3076edca72a6955b4291f69df4230e3
-SHA256: 316d9dc85bdcb7381d801301c80d641f962ba77ca941423628071eee3f47e4c1
+Filename: debs/com.eevee.spotify_6.0_iphoneos-arm64.deb
+Size: 413064
+MD5sum: 0c5063ef5307b3c0725c3611fc5ddba8
+SHA1: 8bc53e1890ff1b0ad10d0d954b89ae42e1daf5e3
+SHA256: 9503ab29a3484089f6401d4dd5bed416bc228aa93b12da409e219c7e70cd938a
 Section: Tweaks
 Description: A tweak to get Spotify Premium for free, just like Spotilife
 Author: Eevee
