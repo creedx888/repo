@@ -26,10 +26,10 @@ jobs:
             fi
           done
 
-      # Step 3: Download arm64 DEBs from EeveeSpotify
-      - name: Download arm64 DEBs from EeveeSpotify
+      # Step 3: Download arm64 DEBs from EeveeSpotifyReborn
+      - name: Download arm64 DEBs from EeveeSpotifyReborn
         run: |
-          API_URL="https://api.github.com/repos/whoeevee/EeveeSpotify/releases/latest"
+          API_URL="https://api.github.com/repos/whoeevee/EeveeSpotifyReborn/releases/latest"
           curl -s $API_URL | jq -r '.assets[] | select(.name | test("iphoneos-arm64.*deb$")) | .browser_download_url' | while read deb_url; do
             wget -P debs/ $deb_url
           done
